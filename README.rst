@@ -69,11 +69,11 @@ Local installation
    
    via https (works without ssh keys)
 
-   ``git clone https://github.com/Samanwaya1301/bilby.git`` 
+   ``git clone https://github.com/samanwaya-mukherjee/bilby.git`` 
    
    or via SSH 
 
-   ``git clone git@github.com:Samanwaya1301/bilby.git``
+   ``git clone git@github.com:samanwaya-mukherjee/bilby.git``
 
 4. Enter and switch to the tidalheating branch:
 
@@ -109,13 +109,23 @@ Installation in LDG clusters
 
 For a cluster installation, *editable install is not recommended* as running jobs may take several days and the results may be inconsistent if the source code is changed during that period.
 
-If the cluster is equipped with IGWN conda distributions and you choose to use that, you may create a conda environment with 
+If the cluster is equipped with IGWN conda distributions (say, igwn-py310) and you choose to use that, you may follow these commands: 
 
 ``conda create -n bilby-tidal --clone igwn-py310``
 
-and install the repo by cloning and activating the tidalheating branch. This will override the already existing Bilby installation in the IGWN clone.
+``conda activate bilby-tidal``
 
-If you don't clone IGWN environment and follow the above steps for a minimal installation in the cluster, you may want to also install `bilby_pipe <https://lscsoft.docs.ligo.org/bilby_pipe/0.3.12/index.html>`_ for job submissions: 
+``git clone https://github.com/samanwaya-mukherjee/bilby.git``
+
+``cd ~/bilby``
+
+``git switch tidalheating``
+
+``pip install .``
+
+This will override the already existing Bilby installation in the IGWN clone.
+
+📌 **NOTE**: If you don't clone an IGWN environment and follow the above steps for a minimal installation in the cluster, you may also need to install `bilby_pipe <https://lscsoft.docs.ligo.org/bilby_pipe/0.3.12/index.html>`_ for job submissions: 
 
 ``conda install -c conda-forge bilby_pipe``
 
