@@ -7,7 +7,7 @@ from .source import _base_lal_cbc_fd_waveform
 
 
 #Dephasing (Eqn 5.12 - 5.20 of arXiv: 2212.13095) -----------
-def psiTH_new(f,mass_1,mass_2,chi_1,chi_2):
+def psiTH_new(f,mass_1,mass_2,chi_1,chi_2,degenerate_terms=True):
 
     # Polygamma function with n=0 (digamma) -------
     def B2(x,y):
@@ -48,9 +48,9 @@ def psiTH_new(f,mass_1,mass_2,chi_1,chi_2):
     
     delta_psi_8_l = -3.*delta_psi_8
     
-    delta_psi = con*(delta_psi_5*v**5 + delta_psi_5_l*v**5*np.log(v) + delta_psi_7*v**7 + delta_psi_8*v**8 + delta_psi_8_l*v**8*np.log(v))
-    
-    
+    if degenerate_terms: delta_psi = con*(delta_psi_5*v**5 + delta_psi_5_l*v**5*np.log(v) + delta_psi_7*v**7 + delta_psi_8*v**8 + delta_psi_8_l*v**8*np.log(v))
+    else: delta_psi = con*(delta_psi_5_l*v**5*np.log(v) + delta_psi_7*v**7 + delta_psi_8_l*v**8*np.log(v))
+        
     return delta_psi
 
 
@@ -273,13 +273,19 @@ def binary_compact_object_lal_pp_base(
     
     # Implement the tidal heating contribution to the phase ---------------
 
-    delta_psi = (1. + dH) * psiTH_new(frequency_array,mass_1,mass_2,chi_1,chi_2)
+    mask =  ((frequency_array >= waveform_kwargs["minimum_frequency"]) &
+             (frequency_array <= waveform_kwargs["maximum_frequency"]))
     
-    hp = strain_dict["plus"]
-    hc = strain_dict["cross"]
+    freqs = frequency_array[mask]
+
+    delta_psi = (1. + dH) * psiTH_new(freqs,mass_1,mass_2,chi_1,chi_2,degenerate_terms=False)
+    phase_corr = np.exp(-1j*delta_psi)
     
-    hp *= np.exp(-1j*delta_psi)
-    hc *= np.exp(-1j*delta_psi) 
+    hp = strain_dict["plus"].copy()
+    hc = strain_dict["cross"].copy()
+
+    hp[mask] *= phase_corr
+    hc[mask] *= phase_corr 
     
     return {"plus": hp, "cross": hc}
 
