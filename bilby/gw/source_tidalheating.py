@@ -297,7 +297,7 @@ def binary_compact_object_lal_pp_base(
         - maximum_frequency_function (function to determine the maximum frequency cutoff, 
                                     default is f_isco_KBH. If both maximum_frequency and maximum_frequency_function 
                                     are provided, an error is raised. If neither is provided, the default is f_isco_KBH.)
-        - TH_in_inspiral (bool, whether tidal heating contribution is included in the inspiral phase,
+        - TH_in_inspiral (bool, whether tidal heating contribution is included in the baseline inspiral phase,
                             default is False. For waveform models like IMRPhenomD_Horizon, this has to be set to True.)
         - catch_waveform_errors
         - pn_spin_order
