@@ -295,6 +295,7 @@ def binary_compact_object_lal_pp_base(
         - minimum_frequency
         - maximum_frequency (float, the maximum frequency cutoff, default is None.)
         - maximum_frequency_function (function to determine the maximum frequency cutoff, 
+                                    available options are 'f_meco', 'f_isco_KBH', 'f_cut_IMRPhenomD', 'f_isco_SBH'. The
                                     default is f_isco_KBH. If both maximum_frequency and maximum_frequency_function 
                                     are provided, an error is raised. If neither is provided, the default is f_isco_KBH.)
         - TH_in_inspiral (bool, whether tidal heating contribution is included in the baseline inspiral phase,
