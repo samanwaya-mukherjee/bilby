@@ -283,18 +283,19 @@ def binary_compact_object_lal_pp_base(
     dH: float
         Tidal heating parameter [H = (1 + dH)]
         (0 for black holes, -1 for neutron stars/perfectly reflecting compact objects)
-    kwargs: dict
+    **kwargs: dict
         Optional keyword arguments
         Supported arguments:
 
         - baseline_approximant (string, name of the lalsimulation approximant to use for the base PP waveform, 
                                 default is 'TaylorF2')
-        - degenerate_terms (bool, whether to include the degenerate terms in the tidal heating phase contribution,
+        - degenerate_terms (bool, whether to include the degenerate terms in the tidal heating phase contribution.
+                            These are the v^5 and v^8 terms that are degenerate with phi_c and t_c, respectively.
                             default is True) 
-        - reference_frequency
-        - minimum_frequency
+        - reference_frequency (float, the reference frequency at which the phase is defined, default is the first element of frequency_array.)
+        - minimum_frequency (float, the minimum frequency cutoff, default is 20 Hz.)
         - maximum_frequency (float, the maximum frequency cutoff, default is None.)
-        - maximum_frequency_function (function to determine the maximum frequency cutoff, 
+        - maximum_frequency_function (string, function to determine the maximum frequency cutoff, 
                                     available options are 'f_meco', 'f_isco_KBH', 'f_cut_IMRPhenomD', 'f_isco_SBH'. The
                                     default is f_isco_KBH. If both maximum_frequency and maximum_frequency_function 
                                     are provided, an error is raised. If neither is provided, the default is f_isco_KBH.)
