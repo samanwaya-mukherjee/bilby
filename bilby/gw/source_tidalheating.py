@@ -300,7 +300,8 @@ def binary_compact_object_lal_pp_base(
                                     default is f_isco_KBH. If both maximum_frequency and maximum_frequency_function 
                                     are provided, an error is raised. If neither is provided, the default is f_isco_KBH.)
         - TH_in_inspiral (bool, whether tidal heating contribution is included in the baseline inspiral phase,
-                            default is False. For waveform models like IMRPhenomD_Horizon, this has to be set to True.)
+                            default is False. For waveform models like IMRPhenomD_Horizon, this has to be set to True. 
+                            This also assumes that the degenerate terms like psi_5 and psi_8 are included in the baseline phase.)
         - catch_waveform_errors
         - pn_spin_order
         - pn_tidal_order
@@ -373,8 +374,12 @@ def binary_compact_object_lal_pp_base(
     
     freqs = frequency_array[mask]
 
-    if TH_in_inspiral: delta_psi =  dH * psiTH_new(freqs,mass_1,mass_2,chi_1,chi_2,degenerate_terms=degenerate_terms)
-    else: delta_psi = (1. + dH) * psiTH_new(freqs,mass_1,mass_2,chi_1,chi_2,degenerate_terms=degenerate_terms)
+    delta_psi_effective = (1. + dH) * psiTH_new(freqs,mass_1,mass_2,chi_1,chi_2,degenerate_terms=degenerate_terms)
+
+    if TH_in_inspiral: 
+        delta_psi_on_pp = psiTH_new(freqs,mass_1,mass_2,chi_1,chi_2,degenerate_terms=True) 
+        delta_psi = - delta_psi_on_pp + delta_psi_effective
+    else: delta_psi = delta_psi_effective
     
     phase_corr = np.exp(-1j*delta_psi)
     
