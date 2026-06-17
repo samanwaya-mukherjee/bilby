@@ -109,11 +109,13 @@ Installation in LDG clusters
 
 For a cluster installation, *editable install is not recommended* as running jobs may take several days and the results may be inconsistent if the source code is changed during that period.
 
-If the cluster is equipped with IGWN conda distributions (say, igwn-py310) and you choose to use that, you may follow these commands: 
+If the cluster is equipped with IGWN conda distributions (say, igwn-py311) and you choose to use that, you may follow these commands: 
 
-``conda create -n bilby-tidal --clone igwn-py310``
+``conda create -n bilby-tidal --clone igwn-py311``
 
 ``conda activate bilby-tidal``
+
+``mkdir bilby-tidal && cd bilby-tidal`` [Recommnded to avoid conflits with any existing bilby clone]
 
 ``git clone https://github.com/samanwaya-mukherjee/bilby.git``
 
