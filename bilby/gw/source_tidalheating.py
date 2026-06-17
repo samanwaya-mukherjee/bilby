@@ -138,30 +138,29 @@ def get_max_frequency(
     mass_1,
     mass_2,
     *,
+    chi_1=0,
+    chi_2=0,
     maximum_frequency=None,
     maximum_frequency_function=None,
-    chi_1=0,
-    chi_2=0
     ):
-    # Case 1: both provided → error
-    if maximum_frequency is not None and maximum_frequency_function is not None:
-        raise ValueError(
-            "Provide only one of:\n"
-            "  - maximum_frequency\n"
-            "  - maximum_frequency_function"
+    # Frequency from function (or default)
+    if maximum_frequency_function is None: 
+        maximum_frequency_function = "f_isco_KBH"
+    
+    fmax_func = f_cut(
+            maximum_frequency_function,
+            mass_1,
+            mass_2,
+            chi_1,
+            chi_2,
         )
 
-    # Case 2: explicit frequency
-    if maximum_frequency is not None:
-        return maximum_frequency
+    # Explicit frequency not supplied
+    if maximum_frequency is None:
+        return fmax_func
 
-    # Case 3: function provided
-    if maximum_frequency_function is not None:
-        return f_cut(maximum_frequency_function, mass_1, mass_2, chi_1, chi_2)
-
-    # Case 4: default
-    return f_cut("f_isco_KBH", mass_1, mass_2, chi_1, chi_2)
-    
+    # Both supplied -> use the smaller
+    return min(maximum_frequency, fmax_func)
 
 # ## Source model for bnary compact objects with arbitrary tidal heating 
 # ####################################################################################
@@ -328,10 +327,10 @@ def binary_compact_object_lal_pp_base(
     # Compute maximum frequency
     maximum_frequency = get_max_frequency(
         mass_1, mass_2,
-        maximum_frequency=maximum_frequency_input,
-        maximum_frequency_function=maximum_frequency_function,
         chi_1=chi_1,
-        chi_2=chi_2
+        chi_2=chi_2,
+        maximum_frequency=maximum_frequency_input,
+        maximum_frequency_function=maximum_frequency_function,  
     )
     
     # Defaults
