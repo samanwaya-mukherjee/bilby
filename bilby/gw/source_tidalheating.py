@@ -197,16 +197,27 @@ def binary_compact_object(
                                                             default is f_isco_KBH),
                             -> reference_frequency (frequency at which the phase is defined. 
                                                     Defaults to the first element of frequency_array),
+                            -> degenerate_terms (bool, whether to include the degenerate terms in the tidal heating phase contribution.
+                            These are the v^5 and v^8 terms that are degenerate with phi_c and t_c, respectively.
+                            default is True)
                            
     Returns:
         dict: dictionary containing the waveform data
     """
     # ---- Determine frequency bounds ----
     minimum_frequency = kwargs.get("minimum_frequency", 20.0)
+    maximum_frequency_input = kwargs.get("maximum_frequency", None)
+    maximum_frequency_function = kwargs.get("maximum_frequency_function", None)
+    degenerate_terms = kwargs.get("degenerate_terms", True)
 
-    maximum_frequency_function = kwargs.get("maximum_frequency_function", f_isco_KBH)
-
-    maximum_frequency = kwargs.get("maximum_frequency", f_cut(maximum_frequency_function, mass_1, mass_2, chi_1, chi_2))
+    maximum_frequency = get_max_frequency(
+        mass_1,
+        mass_2,
+        chi_1=chi_1,
+        chi_2=chi_2,
+        maximum_frequency=maximum_frequency_input,
+        maximum_frequency_function=maximum_frequency_function
+    )
 
     mask = (
             (frequency_array >= minimum_frequency) &
@@ -225,7 +236,7 @@ def binary_compact_object(
     freqs = frequency_array[mask]
     
     reference_frequency = kwargs.get("reference_frequency", minimum_frequency)
-    waveform_kwargs = dict(reference_frequency=reference_frequency)
+    waveform_kwargs = dict(reference_frequency=reference_frequency,degenerate_terms=degenerate_terms)
     hp, hc = generate_binary_compact_object_waveform(
                             frequency_array=freqs,
                             mass_1=mass_1,
@@ -296,8 +307,10 @@ def binary_compact_object_lal_pp_base(
         - maximum_frequency (float, the maximum frequency cutoff, default is None.)
         - maximum_frequency_function (string, function to determine the maximum frequency cutoff, 
                                     available options are 'f_meco', 'f_isco_KBH', 'f_cut_IMRPhenomD', 'f_isco_SBH'. The
-                                    default is f_isco_KBH. If both maximum_frequency and maximum_frequency_function 
-                                    are provided, an error is raised. If neither is provided, the default is f_isco_KBH.)
+                                    default is f_isco_KBH. 
+                                    If both maximum_frequency and maximum_frequency_function 
+                                    are provided, minimum of the two is used. 
+                                    If neither is provided, the default is f_isco_KBH.)
         - TH_in_inspiral (bool, whether tidal heating contribution is included in the baseline inspiral phase,
                             default is False. For waveform models like IMRPhenomD_Horizon, this has to be set to True. 
                             This also assumes that the degenerate terms like psi_5 and psi_8 are included in the baseline phase.)
@@ -524,7 +537,8 @@ def generate_binary_compact_object_waveform(frequency_array,
     psi = (3./(128.*v**5*eta))*(p0 + v*p1 + v**2*p2 + v**3*p3+ v**4*p4 + v**5*(p5+p5L) + v**6*(p6+p6L) + v**7*p7 + v**8*p8L + v**9*p9)
     #-----------------------------------------------------------------------------------------------------
     # Add tidal heating contribution to the phase
-    delta_psi = (1. + dH) * psiTH_new(frequency_array,mass_1,mass_2,chi_1,chi_2)
+    degenerate_terms = kwargs.get("degenerate_terms", True)
+    delta_psi = (1. + dH) * psiTH_new(frequency_array,mass_1,mass_2,chi_1,chi_2,degenerate_terms=degenerate_terms)
     psi += delta_psi
     #-----------------------------------------------------------------------------------------------------
     # Set the overall phase by setting psi = phase at the reference frequency
