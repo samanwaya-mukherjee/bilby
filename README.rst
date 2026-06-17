@@ -111,11 +111,11 @@ For a cluster installation, *editable install is not recommended* as running job
 
 If the cluster is equipped with IGWN conda distributions (say, igwn-py311) and you choose to use that, you may follow these commands: 
 
-``conda create -n bilby-tidal --clone igwn-py311``
+``conda create -n bilby-tidalheating --clone igwn-py311``
 
-``conda activate bilby-tidal``
+``conda activate bilby-tidalheating``
 
-``mkdir bilby-tidal && cd bilby-tidal`` [Recommnded to avoid conflits with any existing bilby clone]
+``mkdir bilby-tidalheating && cd bilby-tidalheating`` [Recommnded to avoid conflits with any existing bilby clone]
 
 ``git clone https://github.com/samanwaya-mukherjee/bilby.git``
 
